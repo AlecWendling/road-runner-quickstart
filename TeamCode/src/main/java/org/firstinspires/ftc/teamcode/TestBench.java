@@ -9,88 +9,35 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+import org.firstinspires.ftc.teamcode.mechanisms.AprilTag;
+
 @TeleOp()
 public final class TestBench extends LinearOpMode {
 
-    public DcMotorEx backFlywheel;
-    public DcMotorEx frontFlywheel;
-    //public DcMotor Motor3;
-    public CRServo LeftIntake;
-    public CRServo RightIntake;
-    public Servo backLift;
-    public Servo frontLift;
-
-    FtcDashboard dashboard;
-
+    AprilTag aprilTag = new AprilTag();
 
     @Override
 
     public void runOpMode() throws InterruptedException {
-        dashboard = FtcDashboard.getInstance();
-        backFlywheel = hardwareMap.get(DcMotorEx.class, "BackFlywheel");
-        frontFlywheel = hardwareMap.get(DcMotorEx.class, "FrontFlywheel");
-        backLift = hardwareMap.get(Servo.class, "BackLift");
-        frontLift = hardwareMap.get(Servo.class, "FrontLift");
-        //Motor3 = hardwareMap.get(DcMotor.class, "Motor3");
-        LeftIntake  = hardwareMap.get(CRServo.class, "LeftIntake");
-        RightIntake  = hardwareMap.get(CRServo.class, "RightIntake");
-        telemetry.addData("Test", "Starting");
 
-        double kP = 10.0;
-        double kI = 0.0;
-        double kD = 0.0;
-        double kF = 11.7;
+        aprilTag.init(hardwareMap);
 
-        backLift.setPosition(0.54);
-        frontLift.setPosition(0.50);
-        backFlywheel.setVelocityPIDFCoefficients(kP, kI, kD, kF);
-        frontFlywheel.setVelocityPIDFCoefficients(kP, kI, kD, kF);
+        telemetry.addData("Pattern",aprilTag.getObeliskPattern(telemetry));
         telemetry.update();
         waitForStart();
 
         while (opModeIsActive()) {
-            backFlywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            frontFlywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            LeftIntake.setPower(-1);
-            RightIntake.setPower(1);
+            //aprilTag.showAprilTagDetails(telemetry);
+           // aprilTag.getDistanceFromRed(telemetry);
+            telemetry.addData("Pattern",aprilTag.getObeliskPattern(telemetry));
+            telemetry.addData("Red Distance",aprilTag.getDistanceFromRed(telemetry));
+            telemetry.addData("Red Angle",aprilTag.getAngleFromRed(telemetry));
+            telemetry.addData("Blue Distance",aprilTag.getDistanceFromBlue(telemetry));
+            telemetry.addData("Blue Angle",aprilTag.getAngleFromBlue(telemetry));
 
-            sleep(5000);
-
-            //frontFlywheel.setVelocity(-2000);
-            //backFlywheel.setVelocity(2000);
-
-
-            sleep(2000);
-            LeftIntake.setPower(0);
-            RightIntake.setPower(0);
-            backLift.setPosition(0.34);
-            sleep(1500);
-            //frontLift.setPosition(0.34);
-
-            sleep(2000);
-
-            backLift.setPosition(0.54);
-            frontLift.setPosition(0.50);
-                sleep(2000);
-            LeftIntake.setPower(-1);
-            RightIntake.setPower(1);
-            sleep(2000);
-            backLift.setPosition(0.34);
-            LeftIntake.setPower(0);
-            RightIntake.setPower(0);
-
-            sleep(2000);
-
-
-
-
-            telemetry.addData("FrontFlywheelVelocity", frontFlywheel.getVelocity());
-            telemetry.addData("BackFlywheelVelocity", backFlywheel.getVelocity());
-            telemetry.addData("BackLiftPosition", backLift.getPosition());
+            //aprilTag.showAprilTagDetails(telemetry);
             telemetry.update();
-
-
 
 
         }
