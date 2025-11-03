@@ -59,6 +59,10 @@ public final class PinpointLocalizer implements Localizer {
         return txWorldPinpoint.times(txPinpointRobot);
     }
 
+    public double getHeading() {
+        return driver.getHeading(UnnormalizedAngleUnit.DEGREES);
+    }
+
     @Override
     public PoseVelocity2d update() {
         driver.update();

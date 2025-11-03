@@ -18,6 +18,12 @@ public class Launchers {
 
     public DcMotorEx frontFlywheel;
 
+   final double[] backDistancePoints = {20, 70, 120, 170, 220, 270, 320};
+   final double[] backSpeedPoints = {1650, 1750, 1800, 1900, 2000, 2225, 2500};
+
+    final double[] frontDistancePoints = {20, 70, 120, 170, 220, 270, 320};
+    final double[] frontSpeedPoints = {1650, 1750, 1800, 1900, 2000, 2225, 2500};
+
     public enum FlywheelState {
         RAMPING_UP,
         FLYWHEEL_ON,
@@ -72,6 +78,68 @@ public class Launchers {
         frontDelayTimer.reset();
     }
 
+    public void LaunchGreen(double motorSpeed, ColorSensors colorSensors, Telemetry telemetry)
+    {
+        if (colorSensors.backLauncherStatus == ColorSensors.LauncherStatus.GREEN_LOADED)
+        {
+            backLaunch((int) motorSpeed);
+        }
+        else if  (colorSensors.frontLauncherStatus == ColorSensors.LauncherStatus.GREEN_LOADED)
+        {
+            frontLaunch((int) motorSpeed);
+        }
+    }
+    public void LaunchPurple(double motorSpeed, ColorSensors colorSensors, Telemetry telemetry)
+    {
+        if (colorSensors.backLauncherStatus == ColorSensors.LauncherStatus.PURPLE_LOADED)
+        {
+            backLaunch((int) motorSpeed);
+        }
+        else if  (colorSensors.frontLauncherStatus == ColorSensors.LauncherStatus.PURPLE_LOADED)
+        {
+            frontLaunch((int) motorSpeed);
+        }
+    }
+
+    public void backDistanceLaunch(double distanceFromTarget, Telemetry telemetry)
+    {
+        double motorSpeed = interpolate(backDistancePoints, backSpeedPoints, distanceFromTarget);
+
+        telemetry.addData("interpSpeed", motorSpeed);
+        backLaunch((int) motorSpeed);
+    }
+
+    public void frontDistanceLaunch(double distanceFromTarget, Telemetry telemetry)
+    {
+        double motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
+
+        telemetry.addData("interpSpeed", motorSpeed);
+        frontLaunch((int) motorSpeed);
+    }
+
+    public void DistanceLaunchGreen(double distanceFromTarget, ColorSensors colorSensors, Telemetry telemetry)
+    {
+        if (colorSensors.backLauncherStatus == ColorSensors.LauncherStatus.GREEN_LOADED)
+        {
+            backDistanceLaunch(distanceFromTarget,telemetry);
+        }
+        else if  (colorSensors.frontLauncherStatus == ColorSensors.LauncherStatus.GREEN_LOADED)
+        {
+            frontDistanceLaunch(distanceFromTarget,telemetry);
+        }
+    }
+    public void DistanceLaunchPurple(double distanceFromTarget, ColorSensors colorSensors, Telemetry telemetry)
+    {
+        if (colorSensors.backLauncherStatus == ColorSensors.LauncherStatus.PURPLE_LOADED)
+        {
+            backDistanceLaunch(distanceFromTarget,telemetry);
+        }
+        else if  (colorSensors.frontLauncherStatus == ColorSensors.LauncherStatus.PURPLE_LOADED)
+        {
+            frontDistanceLaunch(distanceFromTarget,telemetry);
+        }
+    }
+
     public void launcherLoopProcessing(Telemetry telemetry)
     {
 
@@ -102,5 +170,31 @@ public class Launchers {
         telemetry.addData("BackFlyWheelActualSpeed", backFlywheel.getVelocity());
         telemetry.addData("FrontFlyWheelActualSpeed", -frontFlywheel.getVelocity());
 
+    }
+    // Function to perform linear interpolation for a single target value
+    private static double interpolate(double[] distancePoints, double[] speedPoints, double distanceTarget) {
+        if (distancePoints.length != speedPoints.length) {
+            throw new IllegalArgumentException("distancePoints and speedPoints arrays must have the same length");
+        }
+
+        // Handle bounds: before first distance or after last distance
+        if (distanceTarget <= distancePoints[0]) {
+            return speedPoints[0];
+        } else if (distanceTarget >= distancePoints[distancePoints.length - 1]) {
+            return speedPoints[speedPoints.length - 1];
+        } else {
+            // Find interval [distancePoints[j], distancePoints[j+1]] containing distanceTarget
+            for (int j = 0; j < distancePoints.length - 1; j++) {
+                if (distanceTarget >= distancePoints[j] && distanceTarget <= distancePoints[j + 1]) {
+                    // Linear interpolation formula
+                    return speedPoints[j]
+                            + ((speedPoints[j + 1] - speedPoints[j])
+                            / (distancePoints[j + 1] - distancePoints[j]))
+                            * (distanceTarget - distancePoints[j]);
+                }
+            }
+        }
+        // Fallback (should never reach here if bounds are handled)
+        throw new IllegalArgumentException("distanceTarget is out of bounds of distancePoints array");
     }
 }
