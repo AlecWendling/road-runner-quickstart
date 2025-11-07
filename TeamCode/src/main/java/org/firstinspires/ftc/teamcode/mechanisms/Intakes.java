@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -7,25 +9,38 @@ import static org.firstinspires.ftc.teamcode.mechanisms.Intakes.IntakeState.Inta
 import static org.firstinspires.ftc.teamcode.mechanisms.Intakes.IntakeState.Idle;
 import static org.firstinspires.ftc.teamcode.mechanisms.Intakes.IntakeState.Outtaking;
 
+import androidx.annotation.NonNull;
+
 public class Intakes {
 
     public CRServo LeftIntake;
     public CRServo RightIntake;
-
     public CRServo TopIntake;
-
-
 
     public enum IntakeState {
 
         Outtaking,
         Intaking,
-
         Idle;
 
 
     }
     private IntakeState intakeState;
+
+    //AUTON
+    public class RRIntake implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            LeftIntake.setPower(-1);
+            RightIntake.setPower(1);
+            TopIntake.setPower(-1);
+            return true;
+        }
+    }
+    public Action rrIntake() {
+        return new RRIntake();
+    }
+    //AUTON
 
     public void init(HardwareMap HwMap) {
 

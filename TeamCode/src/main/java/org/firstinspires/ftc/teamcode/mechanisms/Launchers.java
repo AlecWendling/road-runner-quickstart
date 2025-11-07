@@ -5,6 +5,10 @@ import static org.firstinspires.ftc.teamcode.mechanisms.Lifts.LiftState.IDLE;
 
 import static java.lang.Math.abs;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,11 +22,11 @@ public class Launchers {
 
     public DcMotorEx frontFlywheel;
 
-   final double[] backDistancePoints = {20, 70, 120, 170, 220, 270, 320};
-   final double[] backSpeedPoints = {1650, 1750, 1800, 1900, 2000, 2225, 2500};
+   final double[] backDistancePoints =      {89.99,  90,     137,    213,    260,    300};
+   final double[] backSpeedPoints =         {0,      1500,   1600,   1800,   2200,   0};
 
-    final double[] frontDistancePoints = {20, 70, 120, 170, 220, 270, 320};
-    final double[] frontSpeedPoints = {1650, 1750, 1800, 1900, 2000, 2225, 2500};
+    final double[] frontDistancePoints =    {20,     70,     120,    170,    220,    270};
+    final double[] frontSpeedPoints =       {1650,   1750,   1800,   1900,   2000,   2225};
 
     public enum FlywheelState {
         RAMPING_UP,
@@ -197,4 +201,19 @@ public class Launchers {
         // Fallback (should never reach here if bounds are handled)
         throw new IllegalArgumentException("distanceTarget is out of bounds of distancePoints array");
     }
+
+    //AUTON
+    public class RRLaunch implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet)
+        {
+            return true;
+        }
+    }
+    public Action rrLaunch() {
+        return new Launchers.RRLaunch();
+    }
+    //AUTON
 }
+
+
