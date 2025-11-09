@@ -52,7 +52,7 @@ public class Lifts {
     public void activateFrontLift()
     {
         frontLiftState = LIFTING_UP;
-        frontLift.setPosition(0.34);
+        frontLift.setPosition(0.30);
         frontLiftDelayTimer.reset();
     }
 

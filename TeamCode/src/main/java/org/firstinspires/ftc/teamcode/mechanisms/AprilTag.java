@@ -4,6 +4,10 @@ import static android.os.SystemClock.sleep;
 
 import android.util.Size;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -32,7 +36,7 @@ public class AprilTag {
         PPG,
         UNKNOWN
     }
-    private ObeliskPattern obeliskPattern = ObeliskPattern.UNKNOWN;
+    public ObeliskPattern obeliskPattern = ObeliskPattern.UNKNOWN;
 
     public void init(HardwareMap hwMap)
     {
@@ -264,4 +268,19 @@ public class AprilTag {
         return obeliskPattern;
     }
 
+    //AUTON
+    public class RRReadObeliskPattern implements Action {
+
+        private Telemetry telemetry;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            obeliskPattern = getObeliskPattern(telemetry);
+            return false;
+        }
+    }
+    public Action rrReadObeliskPattern() {
+        return new RRReadObeliskPattern();
+    }
+    //AUTON
 }

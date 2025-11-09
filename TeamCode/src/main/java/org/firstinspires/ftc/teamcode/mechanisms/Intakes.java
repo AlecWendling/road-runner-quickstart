@@ -28,13 +28,26 @@ public class Intakes {
     private IntakeState intakeState;
 
     //AUTON
+    public class RRIntakeOff implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            LeftIntake.setPower(0);
+            RightIntake.setPower(0);
+            TopIntake.setPower(0);
+            return false;
+        }
+    }
+    public Action rrIntakeOff() {
+        return new RRIntakeOff();
+    }
+
     public class RRIntake implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             LeftIntake.setPower(-1);
             RightIntake.setPower(1);
             TopIntake.setPower(-1);
-            return true;
+            return false;
         }
     }
     public Action rrIntake() {

@@ -25,8 +25,8 @@ public class Launchers {
    final double[] backDistancePoints =      {89.99,  90,     137,    213,    260,    300};
    final double[] backSpeedPoints =         {0,      1500,   1600,   1800,   2200,   0};
 
-    final double[] frontDistancePoints =    {20,     70,     120,    170,    220,    270};
-    final double[] frontSpeedPoints =       {1650,   1750,   1800,   1900,   2000,   2225};
+    final double[] frontDistancePoints =    {89.99, 90,     137,    213,    280,    300};
+    final double[] frontSpeedPoints =       {0,     1600,   1800,   2100,   2400,   0};
 
     public enum FlywheelState {
         RAMPING_UP,
@@ -109,7 +109,7 @@ public class Launchers {
     {
         double motorSpeed = interpolate(backDistancePoints, backSpeedPoints, distanceFromTarget);
 
-        telemetry.addData("interpSpeed", motorSpeed);
+        //telemetry.addData("interpSpeed", motorSpeed);
         backLaunch((int) motorSpeed);
     }
 
@@ -117,7 +117,7 @@ public class Launchers {
     {
         double motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
 
-        telemetry.addData("interpSpeed", motorSpeed);
+        //telemetry.addData("interpSpeed", motorSpeed);
         frontLaunch((int) motorSpeed);
     }
 
@@ -158,7 +158,7 @@ public class Launchers {
             backFlywheelState = FlywheelState.FLYWHEEL_OFF;
         }
 
-        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=2000) || (abs(frontFlywheel.getVelocity())>=abs(frontFlywheelTargetVelocity))))
+        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=2500) || (abs(frontFlywheel.getVelocity())>=abs(frontFlywheelTargetVelocity))))
         {
             frontFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateFrontLift();
@@ -171,8 +171,8 @@ public class Launchers {
 
         lifts.liftLoopProcessing(telemetry);
 
-        telemetry.addData("BackFlyWheelActualSpeed", backFlywheel.getVelocity());
-        telemetry.addData("FrontFlyWheelActualSpeed", -frontFlywheel.getVelocity());
+        //telemetry.addData("BackFlyWheelActualSpeed", backFlywheel.getVelocity());
+        //telemetry.addData("FrontFlyWheelActualSpeed", -frontFlywheel.getVelocity());
 
     }
     // Function to perform linear interpolation for a single target value
@@ -203,15 +203,47 @@ public class Launchers {
     }
 
     //AUTON
-    public class RRLaunch implements Action {
+    public class RRLaunchBack implements Action {
+        private boolean initialized = false;
+        private Telemetry telemetry;
         @Override
         public boolean run(@NonNull TelemetryPacket packet)
         {
-            return true;
+            if (!initialized)
+            {
+                backDistanceLaunch(160,telemetry);
+                initialized=true;
+            }
+
+            launcherLoopProcessing(telemetry);
+
+            return (backFlywheelState != FlywheelState.FLYWHEEL_OFF);
         }
     }
-    public Action rrLaunch() {
-        return new Launchers.RRLaunch();
+    public Action rrLaunchBack() {
+        return new Launchers.RRLaunchBack();
+    }
+
+    public class RRLaunchFront implements Action {
+        private boolean initialized = false;
+        private Telemetry telemetry;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet)
+        {
+            if (!initialized)
+            {
+                frontDistanceLaunch(160,telemetry);
+                initialized=true;
+            }
+
+            launcherLoopProcessing(telemetry);
+
+            return (frontFlywheelState != FlywheelState.FLYWHEEL_OFF);
+        }
+    }
+    public Action rrLaunchFront() {
+        return new Launchers.RRLaunchFront();
     }
     //AUTON
 }
