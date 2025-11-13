@@ -23,10 +23,10 @@ public class Launchers {
     public DcMotorEx frontFlywheel;
 
    final double[] backDistancePoints =      {89.99,  90,     137,    213,    260,    300};
-   final double[] backSpeedPoints =         {0,      1500,   1600,   1800,   2200,   0};
+   final double[] backSpeedPoints =         {0,      1500,   1600,   1800,   2200,   2500};
 
-    final double[] frontDistancePoints =    {89.99, 90,     137,    213,    280,    300};
-    final double[] frontSpeedPoints =       {0,     1600,   1800,   2100,   2400,   0};
+    final double[] frontDistancePoints =    {99.99, 100,     107,    142,    198,    300};
+    final double[] frontSpeedPoints =       {0,     1900,   1900,   2000,   2200,   2500};
 
     public enum FlywheelState {
         RAMPING_UP,
@@ -206,12 +206,19 @@ public class Launchers {
     public class RRLaunchBack implements Action {
         private boolean initialized = false;
         private Telemetry telemetry;
+        double distanceFromTarget;
+
+        public RRLaunchBack(double distanceFromTarget)
+        {
+            this.distanceFromTarget = distanceFromTarget;
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket packet)
         {
             if (!initialized)
             {
-                backDistanceLaunch(160,telemetry);
+                backDistanceLaunch(distanceFromTarget,telemetry);
                 initialized=true;
             }
 
@@ -220,20 +227,25 @@ public class Launchers {
             return (backFlywheelState != FlywheelState.FLYWHEEL_OFF);
         }
     }
-    public Action rrLaunchBack() {
-        return new Launchers.RRLaunchBack();
+    public Action rrLaunchBack(double distanceFromTarget) {
+        return new Launchers.RRLaunchBack(distanceFromTarget);
     }
 
     public class RRLaunchFront implements Action {
         private boolean initialized = false;
         private Telemetry telemetry;
+        double distanceFromTarget;
 
+        public RRLaunchFront(double distanceFromTarget)
+        {
+            this.distanceFromTarget = distanceFromTarget;
+        }
         @Override
         public boolean run(@NonNull TelemetryPacket packet)
         {
             if (!initialized)
             {
-                frontDistanceLaunch(160,telemetry);
+                frontDistanceLaunch(distanceFromTarget,telemetry);
                 initialized=true;
             }
 
@@ -242,8 +254,8 @@ public class Launchers {
             return (frontFlywheelState != FlywheelState.FLYWHEEL_OFF);
         }
     }
-    public Action rrLaunchFront() {
-        return new Launchers.RRLaunchFront();
+    public Action rrLaunchFront(double distanceFromTarget) {
+        return new Launchers.RRLaunchFront(distanceFromTarget);
     }
     //AUTON
 }

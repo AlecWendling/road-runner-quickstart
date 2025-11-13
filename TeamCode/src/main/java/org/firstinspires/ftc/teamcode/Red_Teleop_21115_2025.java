@@ -10,22 +10,15 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.mechanisms.AprilTag;
 import org.firstinspires.ftc.teamcode.mechanisms.ColorSensors;
 import org.firstinspires.ftc.teamcode.mechanisms.Intakes;
 import org.firstinspires.ftc.teamcode.mechanisms.Launchers;
-import org.firstinspires.ftc.teamcode.mechanisms.Lifts;
 
 @Config
 @TeleOp()
-public final class Teleop_21115_2025 extends LinearOpMode {
+public final class Red_Teleop_21115_2025 extends LinearOpMode {
 
 
     MecanumDriveTeleop drive = new MecanumDriveTeleop();
@@ -36,7 +29,9 @@ public final class Teleop_21115_2025 extends LinearOpMode {
 
     FtcDashboard dashboard;
     TelemetryPacket packet;
-    public static double TARGET_ANG = 0;
+
+    /* Adjust this to add offsets to apriltag turn alignment */
+    public static double TURNSQUAREOFFSET = 0;
     public static double TURN_P = 0.015;
     public static double TURN_I = 0.0005;
     public static double TURN_D = 1.2;
@@ -157,7 +152,7 @@ public final class Teleop_21115_2025 extends LinearOpMode {
                 //drive.turnPID(TARGET_ANG, TURN_P, TURN_I, TURN_D);
                 if ((aprilTag.getAngleFromRed(telemetry) !=999) && (drive.isTurnOverride() == false))
                 {
-                    drive.turnPID(-aprilTag.getAngleFromRed(telemetry), TURN_P, TURN_I, TURN_D);
+                    drive.turnPID(-(aprilTag.getAngleFromRed(telemetry)+TURNSQUAREOFFSET), TURN_P, TURN_I, TURN_D);
                 }
             }
 

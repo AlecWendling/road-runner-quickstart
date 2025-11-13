@@ -270,12 +270,13 @@ public class AprilTag {
 
     //AUTON
     public class RRReadObeliskPattern implements Action {
-
         private Telemetry telemetry;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            obeliskPattern = getObeliskPattern(telemetry);
+            if (obeliskPattern == ObeliskPattern.UNKNOWN) {
+                obeliskPattern = getObeliskPattern(telemetry);
+            }
             return false;
         }
     }
