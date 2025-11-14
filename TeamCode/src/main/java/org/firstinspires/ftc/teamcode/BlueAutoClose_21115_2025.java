@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Launchers;
 @Autonomous()
 public final class BlueAutoClose_21115_2025 extends LinearOpMode {
 
-    private static final double BACKDISTANCE = 170;
+    private static final double BACKDISTANCE = 160;
     private static final double FRONTDISTANCE = 160;
     private static final double INTAKETIME = 1.5;
     @Override
@@ -87,12 +87,12 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
+                    //.stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd(intakes.rrIntakeOff());
 
             Actions.runBlocking(
                     new SequentialAction(

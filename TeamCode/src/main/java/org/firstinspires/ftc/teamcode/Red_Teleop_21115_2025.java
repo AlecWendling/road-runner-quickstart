@@ -31,7 +31,7 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
     TelemetryPacket packet;
 
     /* Adjust this to add offsets to apriltag turn alignment */
-    public static double TURNSQUAREOFFSET = 0;
+    public static double TURNSQUAREOFFSET = 7.6;
     public static double TURN_P = 0.015;
     public static double TURN_I = 0.0005;
     public static double TURN_D = 1.2;
@@ -107,7 +107,8 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.LaunchGreen(MotorSpeed, colorSensors,telemetry);
+                    //launchers.LaunchGreen(MotorSpeed, colorSensors,telemetry);
+                    launchers.DistanceLaunchGreen(175, colorSensors, telemetry);
                 }
             }
             if (gamepad1.b)
@@ -119,7 +120,8 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.LaunchPurple(MotorSpeed, colorSensors,telemetry);
+                    //launchers.LaunchPurple(MotorSpeed, colorSensors,telemetry);
+                    launchers.DistanceLaunchPurple(175, colorSensors, telemetry);
                 }
             }
             if (gamepad1.xWasPressed())
@@ -131,7 +133,8 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.backLaunch(MotorSpeed);
+                    launchers.backDistanceLaunch(175, telemetry);
+                    //launchers.backLaunch(MotorSpeed);
                 }
             }
             if (gamepad1.yWasPressed())
@@ -143,7 +146,8 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.frontLaunch(MotorSpeed);
+                    launchers.frontDistanceLaunch(175, telemetry);
+                    //launchers.frontLaunch(MotorSpeed);
                 }
             }
 
@@ -197,7 +201,7 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
             telemetry.addData("FrontLauncher", colorSensors.frontLauncherStatus);
             telemetry.addData("BackLauncher", colorSensors.backLauncherStatus);
             /* Print debug data */
-            telemetry.addData("ManualTargetFlyWheelSpeed", MotorSpeed);
+            //telemetry.addData("ManualTargetFlyWheelSpeed", MotorSpeed);
             telemetry.update();
 
         }

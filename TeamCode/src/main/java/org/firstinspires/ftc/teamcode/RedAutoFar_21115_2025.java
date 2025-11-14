@@ -62,15 +62,18 @@ public final class RedAutoFar_21115_2025 extends LinearOpMode {
         telemetry.addData("Pattern", aprilTag.obeliskPattern);
         telemetry.update();
 
+        /* Force pattern to only shoot back launchers */
+        aprilTag.obeliskPattern = AprilTag.ObeliskPattern.PGP;
+
         if (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.GPP)
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
-                    .stopAndAdd( launchers.rrLaunchFront(FRONTDISTANCE))
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd( launchers.rrLaunchFront(300))
+                    .stopAndAdd(launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(300));
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -82,15 +85,15 @@ public final class RedAutoFar_21115_2025 extends LinearOpMode {
         else if  (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.PGP)
         {
             TrajectoryActionBuilder tabTurnAndShootPGP = drive.actionBuilder(pose)
-                    .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd( launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd(launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(300));
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -101,12 +104,12 @@ public final class RedAutoFar_21115_2025 extends LinearOpMode {
         else
         {
             TrajectoryActionBuilder tabTurnAndShootPPG = drive.actionBuilder(pose)
-                    .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd( launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchFront(FRONTDISTANCE))
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchFront(300))
+                    .stopAndAdd(launchers.rrLaunchBack(300));
 
             Actions.runBlocking(
                     new SequentialAction(

@@ -3,10 +3,12 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.mechanisms.AprilTag;
 import org.firstinspires.ftc.teamcode.mechanisms.Intakes;
@@ -15,6 +17,9 @@ import org.firstinspires.ftc.teamcode.mechanisms.Launchers;
 @Autonomous()
 public final class BlueAutoFar_21115_2025 extends LinearOpMode {
 
+    private static final double BACKDISTANCE = 170;
+    private static final double FRONTDISTANCE = 160;
+    private static final double INTAKETIME = 1.5;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d beginPose = new Pose2d(62, -14, Math.toRadians(90));
@@ -22,16 +27,22 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         Intakes intakes = new Intakes();
         Launchers launchers = new Launchers();
         AprilTag aprilTag = new AprilTag();
+        ElapsedTime aprilTagTimer = new ElapsedTime();
 
         aprilTag.init(hardwareMap);
         intakes.init(hardwareMap);
         launchers.init(hardwareMap);
 
         TrajectoryActionBuilder tabMoveToReadMotif = drive.actionBuilder(beginPose)
-                .strafeToLinearHeading(new Vector2d(56,-14),Math.toRadians(115));
+                .strafeToLinearHeading(new Vector2d(56,-14),Math.toRadians(115),new TranslationalVelConstraint(60));
 
-        /* Try to read patter right at init */
-        aprilTag.obeliskPattern = aprilTag.getObeliskPattern(telemetry);
+        aprilTagTimer.reset();
+
+        while ((aprilTagTimer.milliseconds() < 2000) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
+        {
+            /* Try to read patter right at init */
+            aprilTag.obeliskPattern = aprilTag.getObeliskPattern(telemetry);
+        }
 
         telemetry.addData("Pattern", aprilTag.obeliskPattern);
         telemetry.update();
@@ -41,6 +52,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                     tabMoveToReadMotif.build(),
+                    aprilTag.rrReadObeliskPattern(),
                     aprilTag.rrReadObeliskPattern()
                 ));
 
@@ -56,7 +68,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
                     .stopAndAdd( launchers.rrLaunchFront(300))
                     .stopAndAdd(launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchBack(300));
 
@@ -72,11 +84,11 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
             TrajectoryActionBuilder tabTurnAndShootPGP = drive.actionBuilder(pose)
                     .stopAndAdd( launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchBack(300));
 
@@ -91,7 +103,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
             TrajectoryActionBuilder tabTurnAndShootPPG = drive.actionBuilder(pose)
                     .stopAndAdd( launchers.rrLaunchBack(300))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchFront(300))
                     .stopAndAdd(launchers.rrLaunchBack(300));
@@ -108,12 +120,12 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         pose = drive.localizer.getPose();
 
         TrajectoryActionBuilder tabMoveToCollect = drive.actionBuilder(pose)
-                .strafeToLinearHeading(new Vector2d(36,-30),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(36,-30),Math.toRadians(-90),new TranslationalVelConstraint(60))
                 .stopAndAdd(intakes.rrIntake())
                 .strafeTo(new Vector2d(36,-65))
                 .stopAndAdd(intakes.rrIntakeOff())
                 .setTangent(Math.toRadians(80))
-                .splineToLinearHeading(new Pose2d(-12, -18, Math.toRadians(132)),Math.toRadians(180));
+                .splineToLinearHeading(new Pose2d(-12, -18, Math.toRadians(132)),Math.toRadians(180),new TranslationalVelConstraint(60));
 
         Actions.runBlocking(
                 new ParallelAction(
@@ -127,12 +139,12 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
                     .turnTo(Math.toRadians(132))
-                    .stopAndAdd( launchers.rrLaunchFront(160))
-                    .stopAndAdd(launchers.rrLaunchBack(160))
+                    .stopAndAdd( launchers.rrLaunchFront(FRONTDISTANCE))
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(160));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -145,15 +157,15 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         {
             TrajectoryActionBuilder tabTurnAndShootPGP = drive.actionBuilder(pose)
                     .turnTo(Math.toRadians(132))
-                    .stopAndAdd( launchers.rrLaunchBack(160))
+                    .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(160))
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(160));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -165,12 +177,12 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         {
             TrajectoryActionBuilder tabTurnAndShootPPG = drive.actionBuilder(pose)
                     .turnTo(Math.toRadians(132))
-                    .stopAndAdd( launchers.rrLaunchBack(160))
+                    .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(1.0)
+                    .waitSeconds(INTAKETIME)
                     .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchFront(160))
-                    .stopAndAdd(launchers.rrLaunchBack(160));
+                    .stopAndAdd(launchers.rrLaunchFront(FRONTDISTANCE))
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
 
             Actions.runBlocking(
                     new SequentialAction(

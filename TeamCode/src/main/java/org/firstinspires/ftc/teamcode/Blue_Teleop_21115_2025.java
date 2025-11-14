@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 
+
+import static java.lang.Math.abs;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -26,7 +29,9 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
 
     FtcDashboard dashboard;
     TelemetryPacket packet;
-    public static double TARGET_ANG = 0;
+
+    /* Adjust this to add offsets to apriltag turn alignment */
+    public static double TURNSQUAREOFFSET = 7.6;
     public static double TURN_P = 0.015;
     public static double TURN_I = 0.0005;
     public static double TURN_D = 1.2;
@@ -102,7 +107,8 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.LaunchGreen(MotorSpeed, colorSensors,telemetry);
+                    //launchers.LaunchGreen(MotorSpeed, colorSensors,telemetry);
+                    launchers.DistanceLaunchGreen(175, colorSensors, telemetry);
                 }
             }
             if (gamepad1.b)
@@ -114,7 +120,8 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.LaunchPurple(MotorSpeed, colorSensors,telemetry);
+                    //launchers.LaunchPurple(MotorSpeed, colorSensors,telemetry);
+                    launchers.DistanceLaunchPurple(175, colorSensors, telemetry);
                 }
             }
             if (gamepad1.xWasPressed())
@@ -126,7 +133,8 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.backLaunch(MotorSpeed);
+                    launchers.backDistanceLaunch(175, telemetry);
+                    //launchers.backLaunch(MotorSpeed);
                 }
             }
             if (gamepad1.yWasPressed())
@@ -138,7 +146,8 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
                 }
                 else
                 {
-                    launchers.frontLaunch(MotorSpeed);
+                    launchers.frontDistanceLaunch(175, telemetry);
+                    //launchers.frontLaunch(MotorSpeed);
                 }
             }
 
@@ -147,7 +156,7 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
                 //drive.turnPID(TARGET_ANG, TURN_P, TURN_I, TURN_D);
                 if ((aprilTag.getAngleFromBlue(telemetry) !=999) && (drive.isTurnOverride() == false))
                 {
-                    drive.turnPID(-aprilTag.getAngleFromBlue(telemetry), TURN_P, TURN_I, TURN_D);
+                    drive.turnPID(-(aprilTag.getAngleFromBlue(telemetry)+TURNSQUAREOFFSET), TURN_P, TURN_I, TURN_D);
                 }
             }
 
@@ -192,7 +201,7 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
             telemetry.addData("FrontLauncher", colorSensors.frontLauncherStatus);
             telemetry.addData("BackLauncher", colorSensors.backLauncherStatus);
             /* Print debug data */
-            telemetry.addData("ManualTargetFlyWheelSpeed", MotorSpeed);
+            //telemetry.addData("ManualTargetFlyWheelSpeed", MotorSpeed);
             telemetry.update();
 
         }
