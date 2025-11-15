@@ -40,7 +40,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
 
         while ((aprilTagTimer.milliseconds() < 2000) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
         {
-            /* Try to read patter right at init */
+            /* Try to read pattern right at init */
             aprilTag.obeliskPattern = aprilTag.getObeliskPattern(telemetry);
         }
 
@@ -65,7 +65,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         if (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.GPP)
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchFront(FRONTDISTANCE))
                     .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
@@ -83,7 +83,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         else if  (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.PGP)
         {
             TrajectoryActionBuilder tabTurnAndShootPGP = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
@@ -103,7 +103,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         else
         {
             TrajectoryActionBuilder tabTurnAndShootPPG = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
@@ -123,11 +123,11 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         pose = drive.localizer.getPose();
 
         TrajectoryActionBuilder tabMoveToCollect = drive.actionBuilder(pose)
-                .strafeToLinearHeading(new Vector2d(12,-30),Math.toRadians(-90),new TranslationalVelConstraint(60))
+                .strafeToLinearHeading(new Vector2d(20,-30),Math.toRadians(-90),new TranslationalVelConstraint(60))
                 .stopAndAdd(intakes.rrIntake())
-                .strafeTo(new Vector2d(12,-65))
+                .strafeTo(new Vector2d(20,-65))
                 .stopAndAdd(intakes.rrIntakeOff())
-                .strafeToLinearHeading(new Vector2d(-12,-16),Math.toRadians(132),new TranslationalVelConstraint(60));
+                .strafeToLinearHeading(new Vector2d(-12,-16),Math.toRadians(138),new TranslationalVelConstraint(60));
 
         Actions.runBlocking(
                 new ParallelAction(
@@ -140,7 +140,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         if (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.GPP)
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchFront(FRONTDISTANCE))
                     .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
@@ -158,7 +158,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         else if  (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.PGP)
         {
             TrajectoryActionBuilder tabTurnAndShootPGP = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
@@ -178,7 +178,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         else
         {
             TrajectoryActionBuilder tabTurnAndShootPPG = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)

@@ -31,7 +31,7 @@ public final class Blue_Teleop_21115_2025 extends LinearOpMode {
     TelemetryPacket packet;
 
     /* Adjust this to add offsets to apriltag turn alignment */
-    public static double TURNSQUAREOFFSET = 7.6;
+    public static double TURNSQUAREOFFSET = 6.5;
     public static double TURN_P = 0.015;
     public static double TURN_I = 0.0005;
     public static double TURN_D = 1.2;
