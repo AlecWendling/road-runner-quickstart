@@ -22,6 +22,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
     private static final double INTAKETIME = 1.5;
     @Override
     public void runOpMode() throws InterruptedException {
+        AprilTag.ObeliskPattern readPattern;
         Pose2d beginPose = new Pose2d(62, -14, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
         Intakes intakes = new Intakes();
@@ -62,7 +63,11 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         telemetry.addData("Pattern", aprilTag.obeliskPattern);
         telemetry.update();
 
-        if (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.GPP)
+        /* Force pattern to only shoot back launchers */
+        readPattern = AprilTag.ObeliskPattern.PGP;
+        //readPattern = aprilTag.obeliskPattern;
+
+        if (readPattern == AprilTag.ObeliskPattern.GPP)
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
                     .stopAndAdd( launchers.rrLaunchFront(300))
@@ -79,7 +84,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
             );
 
         }
-        else if  (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.PGP)
+        else if  (readPattern == AprilTag.ObeliskPattern.PGP)
         {
             TrajectoryActionBuilder tabTurnAndShootPGP = drive.actionBuilder(pose)
                     .stopAndAdd( launchers.rrLaunchBack(300))
@@ -138,7 +143,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         if (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.GPP)
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchFront(FRONTDISTANCE))
                     .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
@@ -156,7 +161,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         else if  (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.PGP)
         {
             TrajectoryActionBuilder tabTurnAndShootPGP = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
@@ -176,7 +181,7 @@ public final class BlueAutoFar_21115_2025 extends LinearOpMode {
         else
         {
             TrajectoryActionBuilder tabTurnAndShootPPG = drive.actionBuilder(pose)
-                    .turnTo(Math.toRadians(132))
+                    .turnTo(Math.toRadians(138))
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
