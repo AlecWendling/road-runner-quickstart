@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class AprilTag {
-
+    private final double APRILTAGREADTIME = 1000;
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private VisionPortal visionPortal;               // Used to manage the video source.
 
@@ -271,13 +272,23 @@ public class AprilTag {
     //AUTON
     public class RRReadObeliskPattern implements Action {
         private Telemetry telemetry;
-
+        private boolean initialized = false;
+        private ElapsedTime aprilTagTime = new ElapsedTime();
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
+
+            if (!initialized)
+            {
+                initialized = true;
+                aprilTagTime.reset();
+            }
             if (obeliskPattern == ObeliskPattern.UNKNOWN) {
                 obeliskPattern = getObeliskPattern(telemetry);
+                return aprilTagTime.milliseconds() < APRILTAGREADTIME;
             }
-            return false;
+            else {
+                return false;
+            }
         }
     }
     public Action rrReadObeliskPattern() {
