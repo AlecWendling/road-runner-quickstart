@@ -38,7 +38,7 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
 
         aprilTagTimer.reset();
 
-        while ((aprilTagTimer.milliseconds() < 2000) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
+        while ((aprilTagTimer.milliseconds() < 500) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
         {
             /* Try to read patter right at init */
             aprilTag.obeliskPattern = aprilTag.getObeliskPattern(telemetry);
@@ -50,9 +50,8 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
         waitForStart();
 
         Actions.runBlocking(
-                new SequentialAction(
+                new ParallelAction(
                     tabMoveToReadMotif.build(),
-                    aprilTag.rrReadObeliskPattern(),
                     aprilTag.rrReadObeliskPattern()
                 ));
 

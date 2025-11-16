@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class AprilTag {
-    private final double APRILTAGREADTIME = 1000;
+    private final double APRILTAGREADTIME = 2500;
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private VisionPortal visionPortal;               // Used to manage the video source.
 

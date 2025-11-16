@@ -38,7 +38,7 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
 
         aprilTagTimer.reset();
 
-        while ((aprilTagTimer.milliseconds() < 2000) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
+        while ((aprilTagTimer.milliseconds() < 500) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
         {
             /* Try to read pattern right at init */
             aprilTag.obeliskPattern = aprilTag.getObeliskPattern(telemetry);
@@ -50,9 +50,8 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         waitForStart();
 
         Actions.runBlocking(
-                new SequentialAction(
+                new ParallelAction(
                     tabMoveToReadMotif.build(),
-                    aprilTag.rrReadObeliskPattern(),
                     aprilTag.rrReadObeliskPattern()
                 ));
 
@@ -123,9 +122,9 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         pose = drive.localizer.getPose();
 
         TrajectoryActionBuilder tabMoveToCollect = drive.actionBuilder(pose)
-                .strafeToLinearHeading(new Vector2d(20,-30),Math.toRadians(-90),new TranslationalVelConstraint(60))
+                .strafeToLinearHeading(new Vector2d(26,-30),Math.toRadians(-90),new TranslationalVelConstraint(60))
                 .stopAndAdd(intakes.rrIntake())
-                .strafeTo(new Vector2d(20,-65))
+                .strafeTo(new Vector2d(26,-65))
                 .stopAndAdd(intakes.rrIntakeOff())
                 .strafeToLinearHeading(new Vector2d(-12,-16),Math.toRadians(138),new TranslationalVelConstraint(60));
 
