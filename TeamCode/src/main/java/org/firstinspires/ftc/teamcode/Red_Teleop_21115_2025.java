@@ -151,6 +151,13 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
                 }
             }
 
+            if (gamepad2.aWasPressed())
+            {
+                launchers.spinupBack(175);
+                launchers.spinupFront(175);
+            }
+
+
             if (gamepad1.dpad_up)
             {
                 //drive.turnPID(TARGET_ANG, TURN_P, TURN_I, TURN_D);

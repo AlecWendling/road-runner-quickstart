@@ -31,6 +31,8 @@ public class AprilTag {
     private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
     private VisionPortal visionPortal;               // Used to manage the video source.
 
+    DigitalLED digitalLED = new DigitalLED();
+
     public enum ObeliskPattern {
         GPP,
         PGP,
@@ -41,7 +43,11 @@ public class AprilTag {
 
     public void init(HardwareMap hwMap)
     {
+
+
+        digitalLED.init(hwMap);
         aprilTag = new AprilTagProcessor.Builder()
+
 
                 // The following default settings are available to un-comment and edit as needed.
                 .setDrawAxes(false)
@@ -132,6 +138,8 @@ public class AprilTag {
         double distance = 0.0;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
+
+
         if (!currentDetections.isEmpty())
         {
             for (AprilTagDetection detection : currentDetections)
@@ -153,6 +161,14 @@ public class AprilTag {
             //telemetry.addData("Red Target", "NOT FOUND");
         }
 
+        if (distance == 0)
+        {
+            digitalLED.turnOff();
+        }
+        else
+        {
+            digitalLED.turnOn();
+        }
         return distance;
     }
 

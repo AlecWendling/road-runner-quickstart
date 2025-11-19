@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
+import com.acmerobotics.roadrunner.CompositeAccelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
@@ -34,11 +36,11 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         launchers.init(hardwareMap);
 
         TrajectoryActionBuilder tabMoveToReadMotif = drive.actionBuilder(beginPose)
-                .lineToX(-12,new TranslationalVelConstraint(60));
+                .lineToX(-12,new TranslationalVelConstraint(80), new ProfileAccelConstraint(-30,80));
 
         aprilTagTimer.reset();
 
-        while ((aprilTagTimer.milliseconds() < 500) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
+        while ((aprilTagTimer.milliseconds() < 5000) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
         {
             /* Try to read pattern right at init */
             aprilTag.obeliskPattern = aprilTag.getObeliskPattern(telemetry);
@@ -52,16 +54,29 @@ public final class BlueAutoClose_21115_2025 extends LinearOpMode {
         Actions.runBlocking(
                 new ParallelAction(
                     tabMoveToReadMotif.build(),
-                    aprilTag.rrReadObeliskPattern()
+                    aprilTag.rrReadObeliskPattern(),
+                    //launchers.rrSpinupFront(FRONTDISTANCE),
+                    launchers.rrSpinupBack(BACKDISTANCE)
+                ));
+
+        //temporary for testing
+        Actions.runBlocking(
+                new ParallelAction(
+                        launchers.rrLaunchFront(FRONTDISTANCE),
+                        launchers.rrLaunchBack(BACKDISTANCE)
                 ));
 
         drive.updatePoseEstimate();
         Pose2d pose = drive.localizer.getPose();
 
+        //temporary for testing
+        aprilTag.obeliskPattern = AprilTag.ObeliskPattern.GPP;
+
         telemetry.addData("Pattern", aprilTag.obeliskPattern);
         telemetry.update();
 
         if (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.GPP)
+
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
                     .turnTo(Math.toRadians(138))

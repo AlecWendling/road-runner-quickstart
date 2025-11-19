@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import static org.firstinspires.ftc.teamcode.mechanisms.Launchers.FlywheelState.FLYWHEEL_OFF;
 import static org.firstinspires.ftc.teamcode.mechanisms.Launchers.FlywheelState.RAMPING_UP;
 import static org.firstinspires.ftc.teamcode.mechanisms.Lifts.LiftState.IDLE;
 
@@ -43,6 +44,7 @@ public class Launchers {
     private static double frontFlywheelTargetVelocity;
 
     Lifts lifts = new Lifts();
+
 
     double backFlywheel_kP = 20.0;
     double backFlywheel_kI = 0.0;
@@ -147,26 +149,26 @@ public class Launchers {
     public void launcherLoopProcessing(Telemetry telemetry)
     {
 
-        if ((backFlywheelState == RAMPING_UP) && ((backDelayTimer.milliseconds()>=2000) || (abs(backFlywheel.getVelocity())>=abs(backFlywheelTargetVelocity))))
+        if ((backFlywheelState == RAMPING_UP) && ((backDelayTimer.milliseconds()>=2000) || (abs(backFlywheel.getVelocity()-backFlywheelTargetVelocity)<5)))
         {
             backFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateBackLift();
         }
         else if ((backFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getBackLiftState() == IDLE))
         {
-            backFlywheel.setVelocity(0);
-            backFlywheelState = FlywheelState.FLYWHEEL_OFF;
+            //backFlywheel.setVelocity(0);
+            //backFlywheelState = FlywheelState.FLYWHEEL_OFF;
         }
 
-        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=2500) || (abs(frontFlywheel.getVelocity())>=abs(frontFlywheelTargetVelocity))))
+        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=2000) || (abs(frontFlywheel.getVelocity()-frontFlywheelTargetVelocity)<5)))
         {
             frontFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateFrontLift();
         }
         else if ((frontFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getFrontLiftState() == IDLE))
         {
-            frontFlywheel.setVelocity(0);
-            frontFlywheelState = FlywheelState.FLYWHEEL_OFF;
+            //frontFlywheel.setVelocity(0);
+            //frontFlywheelState = FlywheelState.FLYWHEEL_OFF;
         }
 
         lifts.liftLoopProcessing(telemetry);
@@ -224,7 +226,7 @@ public class Launchers {
 
             launcherLoopProcessing(telemetry);
 
-            return (backFlywheelState != FlywheelState.FLYWHEEL_OFF);
+            return !((backFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getBackLiftState() == IDLE));
         }
     }
     public Action rrLaunchBack(double distanceFromTarget) {
@@ -251,13 +253,91 @@ public class Launchers {
 
             launcherLoopProcessing(telemetry);
 
-            return (frontFlywheelState != FlywheelState.FLYWHEEL_OFF);
+            return !((frontFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getFrontLiftState() == IDLE));
         }
     }
     public Action rrLaunchFront(double distanceFromTarget) {
         return new Launchers.RRLaunchFront(distanceFromTarget);
     }
+
+    public class RRSpinupFront implements Action {
+        private Telemetry telemetry;
+        double distanceFromTarget;
+
+        public RRSpinupFront(double distanceFromTarget)
+        {
+            this.distanceFromTarget = distanceFromTarget;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet)
+        {
+            double motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
+            frontFlywheel.setVelocity(-motorSpeed);
+            frontFlywheelState = RAMPING_UP;
+            return false;
+        }
+    }
+    public Action rrSpinupFront(double distanceFromTarget) {
+        return new Launchers.RRSpinupFront(distanceFromTarget);
+    }
+
+    public class RRSpinupBack implements Action {
+        private Telemetry telemetry;
+        double distanceFromTarget;
+
+        public RRSpinupBack(double distanceFromTarget)
+        {
+            this.distanceFromTarget = distanceFromTarget;
+        }
+        @Override
+
+        public boolean run(@NonNull TelemetryPacket packet)
+        {
+            double motorSpeed = interpolate(backDistancePoints, backSpeedPoints, distanceFromTarget);
+            backFlywheel.setVelocity(motorSpeed);
+            return false;
+        }
+    }
+    public Action rrSpinupBack(double distanceFromTarget) {
+        return new Launchers.RRSpinupBack(distanceFromTarget);
+    }
     //AUTON
+
+    public void spinupBack(double distanceFromTarget)
+    {
+        double motorSpeed = interpolate(backDistancePoints, backSpeedPoints, distanceFromTarget);
+
+        if (backFlywheelTargetVelocity!= 0)
+        {
+            backFlywheelState = FLYWHEEL_OFF;
+            backFlywheel.setVelocity(0);
+            backFlywheelTargetVelocity = 0;
+        }
+        else
+        {
+            backFlywheel.setVelocity(motorSpeed);
+            backFlywheelTargetVelocity = motorSpeed;
+        }
+
+    }
+
+    public void spinupFront(double distanceFromTarget)
+    {
+        double motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
+
+        if (frontFlywheelTargetVelocity!= 0)
+        {
+            frontFlywheelState = FLYWHEEL_OFF;
+            frontFlywheel.setVelocity(0);
+            frontFlywheelTargetVelocity = 0;
+        }
+        else
+        {
+            frontFlywheel.setVelocity(-motorSpeed);
+            frontFlywheelTargetVelocity = -motorSpeed;
+        }
+    }
+
 }
 
 
