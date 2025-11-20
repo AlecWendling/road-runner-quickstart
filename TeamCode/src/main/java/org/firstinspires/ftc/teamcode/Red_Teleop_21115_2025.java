@@ -153,8 +153,8 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
 
             if (gamepad2.aWasPressed())
             {
-                launchers.spinupBack(175);
-                launchers.spinupFront(175);
+                launchers.spinupBack(175, true);
+                launchers.spinupFront(175, true);
             }
 
 
@@ -202,9 +202,17 @@ public final class Red_Teleop_21115_2025 extends LinearOpMode {
             packet.put("TargetAngle", drive.getTurnTargetAngle());
             dashboard.sendTelemetryPacket(packet);
 
+            /* Continual launcher speed adjust */
+            double distanceFromTarget;
+            distanceFromTarget = aprilTag.getDistanceFromRed(telemetry);
+            if (distanceFromTarget != 0) {
+                launchers.spinupBack(distanceFromTarget, false);
+                launchers.spinupFront(distanceFromTarget, false);
+            }
+
             //aprilTag.showAprilTagDetails(telemetry);
             telemetry.addData("AngleFromRed", aprilTag.getAngleFromRed(telemetry));
-            telemetry.addData("DistanceFromRed", aprilTag.getDistanceFromRed(telemetry));
+            telemetry.addData("DistanceFromRed", distanceFromTarget);
             telemetry.addData("FrontLauncher", colorSensors.frontLauncherStatus);
             telemetry.addData("BackLauncher", colorSensors.backLauncherStatus);
             /* Print debug data */

@@ -39,9 +39,9 @@ public class AprilTag {
     {
 
 
-        digitalLED.init(hwMap);
-        digitalLED.turnOffGreen();
-        digitalLED.turnOffRed();
+        digitalLED.init_apriltagled(hwMap);
+        digitalLED.apriltag_TurnOffGreen();
+        digitalLED.apriltag_TurnOffRed();
         aprilTag = new AprilTagProcessor.Builder()
 
 
@@ -157,11 +157,11 @@ public class AprilTag {
 
         if (distance == 0)
         {
-            digitalLED.turnOffRed();
+            digitalLED.apriltag_TurnOffRed();
         }
         else
         {
-            digitalLED.turnOnRed();
+            digitalLED.apriltag_TurnOnRed();
         }
         return distance;
     }
@@ -264,15 +264,15 @@ public class AprilTag {
 
                         if (detection.metadata.name.equals("Obelisk_GPP")) {
                             obeliskPattern = ObeliskPattern.GPP;
-                            digitalLED.turnOnGreen();
+                            digitalLED.apriltag_TurnOnGreen();
                             break;
                         } else if (detection.metadata.name.equals("Obelisk_PGP")) {
                             obeliskPattern = ObeliskPattern.PGP;
-                            digitalLED.turnOnGreen();
+                            digitalLED.apriltag_TurnOnGreen();
                             break;
                         } else if (detection.metadata.name.equals("Obelisk_PPG")) {
                             obeliskPattern = ObeliskPattern.PPG;
-                            digitalLED.turnOnGreen();
+                            digitalLED.apriltag_TurnOnGreen();
                             break;
                         }
                     }

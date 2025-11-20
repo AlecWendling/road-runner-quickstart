@@ -19,6 +19,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Launchers {
 
+    DigitalLED digitalLED = new DigitalLED();
+    private final double LAUNCHERSPINUPDELAY = 0.01;
     public DcMotorEx backFlywheel;
 
     public DcMotorEx frontFlywheel;
@@ -59,6 +61,10 @@ public class Launchers {
     public void init(HardwareMap hwMap)
     {
         lifts.init(hwMap);
+        digitalLED.init_flywheelled(hwMap);
+
+        digitalLED.flywheel_TurnOffGreen();
+        digitalLED.flywheel_TurnOffRed();
 
         backFlywheel = hwMap.get(DcMotorEx.class, "BackFlywheel");
         frontFlywheel = hwMap.get(DcMotorEx.class, "FrontFlywheel");
@@ -149,7 +155,7 @@ public class Launchers {
     public void launcherLoopProcessing(Telemetry telemetry)
     {
 
-        if ((backFlywheelState == RAMPING_UP) && ((backDelayTimer.milliseconds()>=1500) || (abs(abs(backFlywheel.getVelocity())-abs(backFlywheelTargetVelocity))<20)))
+        if ((backFlywheelState == RAMPING_UP) && ((backDelayTimer.milliseconds()>=LAUNCHERSPINUPDELAY) || (abs(abs(backFlywheel.getVelocity())-abs(backFlywheelTargetVelocity))<20)))
         {
             backFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateBackLift();
@@ -160,7 +166,7 @@ public class Launchers {
             //backFlywheelState = FlywheelState.FLYWHEEL_OFF;
         }
 
-        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=1500) || (abs(abs(frontFlywheel.getVelocity())-abs(frontFlywheelTargetVelocity))<20)))
+        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=LAUNCHERSPINUPDELAY) || (abs(abs(frontFlywheel.getVelocity())-abs(frontFlywheelTargetVelocity))<20)))
         {
             frontFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateFrontLift();
@@ -306,35 +312,37 @@ public class Launchers {
     }
     //AUTON
 
-    public void spinupBack(double distanceFromTarget)
+    public void spinupBack(double distanceFromTarget, boolean buttonPressed)
     {
         double motorSpeed = interpolate(backDistancePoints, backSpeedPoints, distanceFromTarget);
 
-        if (backFlywheelTargetVelocity!= 0)
+        if ((backFlywheelTargetVelocity!= 0) && (buttonPressed))
         {
+            digitalLED.flywheel_TurnOffGreen();
             backFlywheelState = FLYWHEEL_OFF;
             backFlywheel.setVelocity(0);
             backFlywheelTargetVelocity = 0;
         }
-        else
+        else if ((buttonPressed) || (backFlywheelTargetVelocity!= 0))
         {
+            digitalLED.flywheel_TurnOnGreen();
             backFlywheel.setVelocity(motorSpeed);
             backFlywheelTargetVelocity = motorSpeed;
         }
 
     }
 
-    public void spinupFront(double distanceFromTarget)
+    public void spinupFront(double distanceFromTarget, boolean buttonPressed)
     {
         double motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
 
-        if (frontFlywheelTargetVelocity!= 0)
+        if ((frontFlywheelTargetVelocity!= 0) && (buttonPressed))
         {
             frontFlywheelState = FLYWHEEL_OFF;
             frontFlywheel.setVelocity(0);
             frontFlywheelTargetVelocity = 0;
         }
-        else
+        else if ((buttonPressed) || (frontFlywheelTargetVelocity!= 0))
         {
             frontFlywheel.setVelocity(-motorSpeed);
             frontFlywheelTargetVelocity = -motorSpeed;
