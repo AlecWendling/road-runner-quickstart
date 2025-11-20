@@ -20,7 +20,7 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
 
     private static final double BACKDISTANCE = 160;
     private static final double FRONTDISTANCE = 160;
-    private static final double INTAKETIME = 1.5;
+    private static final double INTAKETIME = 0.75;
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d beginPose = new Pose2d(-47, 50, Math.toRadians(135));
@@ -41,7 +41,7 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
 
         while ((aprilTagTimer.milliseconds() < 5000) && (aprilTag.obeliskPattern == AprilTag.ObeliskPattern.UNKNOWN))
         {
-            /* Try to read patter right at init */
+            /* Try to read pattern right at init */
             aprilTag.obeliskPattern = aprilTag.getObeliskPattern(telemetry);
         }
 
@@ -61,9 +61,6 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
         drive.updatePoseEstimate();
         Pose2d pose = drive.localizer.getPose();
 
-        //temporary for testing
-        aprilTag.obeliskPattern = AprilTag.ObeliskPattern.GPP;
-
         telemetry.addData("Pattern", aprilTag.obeliskPattern);
         telemetry.update();
 
@@ -71,12 +68,12 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
         {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
                     .turnTo(Math.toRadians(48))
-                    .stopAndAdd( launchers.rrLaunchFront(FRONTDISTANCE))
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd(launchers.rrLaunchFront(FRONTDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .waitSeconds(INTAKETIME*2)
+					.stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd(intakes.rrIntakeOff());
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -92,9 +89,7 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
-                    //.stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
-                    .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
                     .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntakeOff());
@@ -112,9 +107,9 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchFront(FRONTDISTANCE))
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+					.stopAndAdd(intakes.rrIntakeOff());
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -128,13 +123,13 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
         pose = drive.localizer.getPose();
 
         TrajectoryActionBuilder tabMoveToCollect = drive.actionBuilder(pose)
-                .strafeToLinearHeading(new Vector2d(12,30),Math.toRadians(90),new TranslationalVelConstraint(60))
+                .strafeToLinearHeading(new Vector2d(12,30),Math.toRadians(90),new TranslationalVelConstraint(80), new ProfileAccelConstraint(-30,80))
                 .stopAndAdd(intakes.rrIntake())
                 .strafeTo(new Vector2d(12,65))
                 .stopAndAdd(intakes.rrIntakeOff())
                 .stopAndAdd(launchers.rrSpinupFront(FRONTDISTANCE))
                 .stopAndAdd(launchers.rrSpinupBack(BACKDISTANCE))
-                .strafeToLinearHeading(new Vector2d(-12,16),Math.toRadians(48),new TranslationalVelConstraint(60));
+                .strafeToLinearHeading(new Vector2d(-12,16),Math.toRadians(48),new TranslationalVelConstraint(80), new ProfileAccelConstraint(-30,80));
 
         Actions.runBlocking(
                 new ParallelAction(
@@ -149,11 +144,11 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
             TrajectoryActionBuilder tabTurnAndShootGPP = drive.actionBuilder(pose)
                     .turnTo(Math.toRadians(48))
                     .stopAndAdd( launchers.rrLaunchFront(FRONTDISTANCE))
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
-                    .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .waitSeconds(INTAKETIME*2)
+					.stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd(intakes.rrIntakeOff());
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -169,12 +164,10 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
-                    .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+                    .stopAndAdd(intakes.rrIntakeOff());
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -189,9 +182,9 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
                     .stopAndAdd( launchers.rrLaunchBack(BACKDISTANCE))
                     .stopAndAdd(intakes.rrIntake())
                     .waitSeconds(INTAKETIME)
-                    .stopAndAdd(intakes.rrIntakeOff())
                     .stopAndAdd(launchers.rrLaunchFront(FRONTDISTANCE))
-                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE));
+                    .stopAndAdd(launchers.rrLaunchBack(BACKDISTANCE))
+					.stopAndAdd(intakes.rrIntakeOff());
 
             Actions.runBlocking(
                     new SequentialAction(
@@ -199,6 +192,22 @@ public final class RedAutoClose_21115_2025 extends LinearOpMode {
                     )
             );
         }
+
+        drive.updatePoseEstimate();
+        pose = drive.localizer.getPose();
+
+        TrajectoryActionBuilder tabCollectFinalArtifacts = drive.actionBuilder(pose)
+                .turnTo(Math.toRadians(90))
+                .stopAndAdd(intakes.rrIntake())
+                .strafeTo(new Vector2d(-12,60))
+                .stopAndAdd(intakes.rrIntakeOff())
+                .strafeToLinearHeading(new Vector2d(-40,24),Math.toRadians(33),new TranslationalVelConstraint(80), new ProfileAccelConstraint(-30,80));
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        tabCollectFinalArtifacts.build()
+                )
+        );
 
         while(opModeIsActive()) {
 

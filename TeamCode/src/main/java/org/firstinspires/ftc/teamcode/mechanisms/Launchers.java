@@ -149,7 +149,7 @@ public class Launchers {
     public void launcherLoopProcessing(Telemetry telemetry)
     {
 
-        if ((backFlywheelState == RAMPING_UP) && ((backDelayTimer.milliseconds()>=2000) || (abs(backFlywheel.getVelocity()-backFlywheelTargetVelocity)<5)))
+        if ((backFlywheelState == RAMPING_UP) && ((backDelayTimer.milliseconds()>=1500) || (abs(abs(backFlywheel.getVelocity())-abs(backFlywheelTargetVelocity))<20)))
         {
             backFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateBackLift();
@@ -160,7 +160,7 @@ public class Launchers {
             //backFlywheelState = FlywheelState.FLYWHEEL_OFF;
         }
 
-        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=2000) || (abs(frontFlywheel.getVelocity()-frontFlywheelTargetVelocity)<5)))
+        if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=1500) || (abs(abs(frontFlywheel.getVelocity())-abs(frontFlywheelTargetVelocity))<20)))
         {
             frontFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateFrontLift();
@@ -273,7 +273,8 @@ public class Launchers {
         {
             double motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
             frontFlywheel.setVelocity(-motorSpeed);
-            frontFlywheelState = RAMPING_UP;
+            frontFlywheelTargetVelocity = -motorSpeed;
+            //frontFlywheelState = RAMPING_UP;
             return false;
         }
     }
@@ -295,6 +296,8 @@ public class Launchers {
         {
             double motorSpeed = interpolate(backDistancePoints, backSpeedPoints, distanceFromTarget);
             backFlywheel.setVelocity(motorSpeed);
+            backFlywheelTargetVelocity = motorSpeed;
+            //backFlywheelState = RAMPING_UP;
             return false;
         }
     }

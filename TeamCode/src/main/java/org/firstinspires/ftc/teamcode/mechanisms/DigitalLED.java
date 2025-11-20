@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LED;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
 public class DigitalLED {
 
@@ -15,15 +14,25 @@ public class DigitalLED {
         apriltag_led_green = hwMap.get(LED.class, "led_green");
     }
 
-    public void turnOn()
+    public void turnOnRed()
     {
         apriltag_led_green.off();
         apriltag_led_red.on();
     }
 
-    public void turnOff()
+    public void turnOffRed()
     {
         apriltag_led_green.off();
         apriltag_led_red.off();
+    }
+
+    public void turnOnGreen()
+    {
+        apriltag_led_green.on();
+    }
+
+    public void turnOffGreen()
+    {
+        apriltag_led_green.off();
     }
 }

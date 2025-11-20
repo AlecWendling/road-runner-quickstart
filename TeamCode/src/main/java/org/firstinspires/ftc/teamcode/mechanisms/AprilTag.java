@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
-import static android.os.SystemClock.sleep;
-
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -12,10 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -24,7 +19,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class AprilTag {
     private final double APRILTAGREADTIME = 2500;
@@ -46,6 +40,8 @@ public class AprilTag {
 
 
         digitalLED.init(hwMap);
+        digitalLED.turnOffGreen();
+        digitalLED.turnOffRed();
         aprilTag = new AprilTagProcessor.Builder()
 
 
@@ -138,8 +134,6 @@ public class AprilTag {
         double distance = 0.0;
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
-
-
         if (!currentDetections.isEmpty())
         {
             for (AprilTagDetection detection : currentDetections)
@@ -163,11 +157,11 @@ public class AprilTag {
 
         if (distance == 0)
         {
-            digitalLED.turnOff();
+            digitalLED.turnOffRed();
         }
         else
         {
-            digitalLED.turnOn();
+            digitalLED.turnOnRed();
         }
         return distance;
     }
@@ -270,12 +264,15 @@ public class AprilTag {
 
                         if (detection.metadata.name.equals("Obelisk_GPP")) {
                             obeliskPattern = ObeliskPattern.GPP;
+                            digitalLED.turnOnGreen();
                             break;
                         } else if (detection.metadata.name.equals("Obelisk_PGP")) {
                             obeliskPattern = ObeliskPattern.PGP;
+                            digitalLED.turnOnGreen();
                             break;
                         } else if (detection.metadata.name.equals("Obelisk_PPG")) {
                             obeliskPattern = ObeliskPattern.PPG;
+                            digitalLED.turnOnGreen();
                             break;
                         }
                     }
