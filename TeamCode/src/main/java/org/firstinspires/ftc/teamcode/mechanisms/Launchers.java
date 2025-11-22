@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.mechanisms;
 import static org.firstinspires.ftc.teamcode.mechanisms.Launchers.FlywheelState.FLYWHEEL_OFF;
 import static org.firstinspires.ftc.teamcode.mechanisms.Launchers.FlywheelState.RAMPING_UP;
 import static org.firstinspires.ftc.teamcode.mechanisms.Lifts.LiftState.IDLE;
+import static org.firstinspires.ftc.teamcode.mechanisms.Lifts.LiftState.LIFTING_DOWN;
 
 import static java.lang.Math.abs;
 
@@ -76,17 +77,13 @@ public class Launchers {
     }
     public void backLaunch(int MotorSpeed)
     {
-        backFlywheel.setVelocity(MotorSpeed);
         backFlywheelState = RAMPING_UP;
-        backFlywheelTargetVelocity = MotorSpeed;
         backDelayTimer.reset();
     }
 
     public void frontLaunch(int MotorSpeed)
     {
-        frontFlywheel.setVelocity(-MotorSpeed);
         frontFlywheelState = RAMPING_UP;
-        frontFlywheelTargetVelocity = -MotorSpeed;
         frontDelayTimer.reset();
     }
 
@@ -154,16 +151,10 @@ public class Launchers {
 
     public void launcherLoopProcessing(Telemetry telemetry)
     {
-
         if ((backFlywheelState == RAMPING_UP) && ((backDelayTimer.milliseconds()>=LAUNCHERSPINUPDELAY) || (abs(abs(backFlywheel.getVelocity())-abs(backFlywheelTargetVelocity))<20)))
         {
             backFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateBackLift();
-        }
-        else if ((backFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getBackLiftState() == IDLE))
-        {
-            //backFlywheel.setVelocity(0);
-            //backFlywheelState = FlywheelState.FLYWHEEL_OFF;
         }
 
         if ((frontFlywheelState == RAMPING_UP) && ((frontDelayTimer.milliseconds()>=LAUNCHERSPINUPDELAY) || (abs(abs(frontFlywheel.getVelocity())-abs(frontFlywheelTargetVelocity))<20)))
@@ -171,17 +162,8 @@ public class Launchers {
             frontFlywheelState = FlywheelState.FLYWHEEL_ON;
             lifts.activateFrontLift();
         }
-        else if ((frontFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getFrontLiftState() == IDLE))
-        {
-            //frontFlywheel.setVelocity(0);
-            //frontFlywheelState = FlywheelState.FLYWHEEL_OFF;
-        }
 
         lifts.liftLoopProcessing(telemetry);
-
-        //telemetry.addData("BackFlyWheelActualSpeed", backFlywheel.getVelocity());
-        //telemetry.addData("FrontFlyWheelActualSpeed", -frontFlywheel.getVelocity());
-
     }
     // Function to perform linear interpolation for a single target value
     private static double interpolate(double[] distancePoints, double[] speedPoints, double distanceTarget) {
@@ -232,7 +214,7 @@ public class Launchers {
 
             launcherLoopProcessing(telemetry);
 
-            return !((backFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getBackLiftState() == IDLE));
+            return !((backFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getBackLiftState() == LIFTING_DOWN));
         }
     }
     public Action rrLaunchBack(double distanceFromTarget) {
@@ -259,7 +241,7 @@ public class Launchers {
 
             launcherLoopProcessing(telemetry);
 
-            return !((frontFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getFrontLiftState() == IDLE));
+            return !((frontFlywheelState == FlywheelState.FLYWHEEL_ON) && (lifts.getFrontLiftState() == LIFTING_DOWN));
         }
     }
     public Action rrLaunchFront(double distanceFromTarget) {
@@ -310,9 +292,25 @@ public class Launchers {
     public Action rrSpinupBack(double distanceFromTarget) {
         return new Launchers.RRSpinupBack(distanceFromTarget);
     }
+
+    public class RRFinishLifts implements Action {
+
+        private Telemetry telemetry;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet)
+        {
+            launcherLoopProcessing(telemetry);
+
+            return (lifts.getFrontLiftState() != IDLE) || (lifts.getBackLiftState() != IDLE);
+        }
+    }
+    public Action rrFinishLifts() {
+        return new Launchers.RRFinishLifts();
+    }
     //AUTON
 
-    public void spinupBack(double distanceFromTarget, boolean buttonPressed)
+    public void spinup(double distanceFromTarget, boolean buttonPressed)
     {
         double motorSpeed = interpolate(backDistancePoints, backSpeedPoints, distanceFromTarget);
 
@@ -330,11 +328,7 @@ public class Launchers {
             backFlywheelTargetVelocity = motorSpeed;
         }
 
-    }
-
-    public void spinupFront(double distanceFromTarget, boolean buttonPressed)
-    {
-        double motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
+        motorSpeed = interpolate(frontDistancePoints, frontSpeedPoints, distanceFromTarget);
 
         if ((frontFlywheelTargetVelocity!= 0) && (buttonPressed))
         {
@@ -348,7 +342,6 @@ public class Launchers {
             frontFlywheelTargetVelocity = -motorSpeed;
         }
     }
-
 }
 
 
